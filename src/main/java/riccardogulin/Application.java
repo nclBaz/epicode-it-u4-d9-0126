@@ -99,6 +99,49 @@ public class Application {
 		List<User> sortedBySurname = randomUsers.stream().sorted(Comparator.comparing(User::getSurname).reversed()).toList();
 		sortedBySurname.forEach(System.out::println);
 
+		// 4. Ordiniamo gli utenti per età poi raggruppiamo per città
+		Map<String, List<User>> usersSortedAndGroupedByCity = randomUsers.stream().sorted(Comparator.comparing(User::getAge)).collect(Collectors.groupingBy(User::getCity));
+		usersSortedAndGroupedByCity.forEach((city, users) -> System.out.println("City: " + city + ", users: " + users));
+
+		System.out.println("--------------------------------- LIMIT -----------------------------------------------");
+		// 1. Otteniamo la lista dei 10 utenti più vecchi
+		List<User> top10OldUsers = randomUsers.stream().sorted(Comparator.comparing(User::getAge).reversed()).limit(10).toList();
+		top10OldUsers.forEach(System.out::println);
+
+		// 1. Otteniamo la lista dei secondi 10 utenti più vecchi (posizioni da 11 a 20)
+		System.out.println("--------------------------------- SKIP -----------------------------------------------");
+		List<User> from11to20Users = randomUsers.stream().sorted(Comparator.comparing(User::getAge).reversed()).skip(10).limit(10).toList();
+		from11to20Users.forEach(System.out::println);
+
+		System.out.println("--------------------------------- MAP TO -----------------------------------------------");
+
+		// 1. Somma delle età degli utenti tramite map + reduce
+		int total = randomUsers.stream().map(User::getAge).reduce(0, (partialSum, currentAge) -> partialSum + currentAge);
+		System.out.println("Somma tramite reduce: " + total);
+
+		// 2. Somma delle età degli utenti tramite Collectors summingInt
+		int total2 = randomUsers.stream().collect(Collectors.summingInt(User::getAge));
+		System.out.println("Somma tramite Collectors: " + total2);
+
+		// 3. Somma delle età degli utenti tramite mapToInt
+		int total3 = randomUsers.stream().mapToInt(User::getAge).sum();
+		System.out.println("Somma tramite mapToInt: " + total3);
+
+		// 4. Media delle età tramite mapToInt
+		OptionalDouble average2 = randomUsers.stream().mapToInt(User::getAge).average();
+		if (average2.isPresent())
+			System.out.println("Media tramite mapToInt: " + average2.getAsDouble());
+		else System.out.println("Non è stato possibile calcolare la media");
+
+		// 5. Età massima
+		OptionalInt maxAge = randomUsers.stream().mapToInt(User::getAge).max();
+		if (maxAge.isPresent()) System.out.println("L'età massima è: " + maxAge.getAsInt());
+		else System.out.println("Non è stato possibile stabilire l'età massima");
+
+		// 6. Statistiche varie sulle età
+		IntSummaryStatistics stats = randomUsers.stream().mapToInt(User::getAge).summaryStatistics();
+		System.out.println(stats);
+
 
 	}
 }
